@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "leothomas1916@gmail.com" && request.auth.token.email_verified == true));
+    }
+    
+    function isStaff() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'staff']);
+    }
+
+    // User Profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAdmin() || isOwner(userId);
+    }
+
+    // Bookings
+    match /bookings/{bookingId} {
+      allow read: if isStaff();
+      allow create: if isStaff();
+      allow update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    // Customers
+    match /customers/{customerId} {
+      allow read: if isStaff();
+      allow create: if isStaff();
+      allow update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    // AI Logs
+    match /ai_logs/{logId} {
+      allow read: if isStaff();
+      allow create: if isStaff();
+    }
+
+    // GMB Tokens (Backend Only)
+    match /gmb_tokens/{userId} {
+      allow read, write: if false;
+    }
+
+    // GMB Logs
+    match /gmb_logs/{logId} {
+      allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if false; // Only backend can create logs
+    }
+
+    // GMB Settings
+    match /gmb_settings/{userId} {
+      allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
+    }
+  }
+}

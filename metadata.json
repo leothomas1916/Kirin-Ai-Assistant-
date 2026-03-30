@@ -1,0 +1,5 @@
+{
+  "name": "Kirin AI CRM",
+  "description": "A production-grade AI-powered CRM dashboard for repair businesses with deep automation and real-time capabilities.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
+}

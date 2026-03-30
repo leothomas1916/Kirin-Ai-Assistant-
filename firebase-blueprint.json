@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the CRM system.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "staff"] }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "A repair booking.",
+      "type": "object",
+      "properties": {
+        "customerName": { "type": "string" },
+        "phone": { "type": "string" },
+        "device": { "type": "string" },
+        "issue": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "delivered"] },
+        "assignedTo": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerName", "phone", "device", "issue", "status", "createdAt"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "A customer profile.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "notes": { "type": "string" },
+        "history": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name", "phone"]
+    },
+    "AILog": {
+      "title": "AI Log",
+      "description": "A log of AI actions.",
+      "type": "object",
+      "properties": {
+        "command": { "type": "string" },
+        "action": { "type": "string" },
+        "result": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["command", "action", "timestamp"]
+    },
+    "GMBToken": {
+      "title": "GMB Token",
+      "description": "Google Business Profile OAuth2 tokens.",
+      "type": "object",
+      "properties": {
+        "accessToken": { "type": "string" },
+        "refreshToken": { "type": "string" },
+        "expiryDate": { "type": "number" }
+      },
+      "required": ["accessToken", "refreshToken", "expiryDate"]
+    },
+    "GMBLog": {
+      "title": "GMB Log",
+      "description": "A log of GMB automated replies.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "reviewId": { "type": "string" },
+        "reply": { "type": "string" },
+        "status": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "reviewId", "reply", "status", "timestamp"]
+    },
+    "GMBSettings": {
+      "title": "GMB Settings",
+      "description": "Settings for GMB automation.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "autoReplyEnabled": { "type": "boolean" },
+        "minRating": { "type": "integer" },
+        "replyStyle": { "type": "string", "enum": ["professional", "friendly", "concise"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "autoReplyEnabled"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles."
+    },
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Repair bookings."
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Customer records."
+    },
+    "/ai_logs/{logId}": {
+      "schema": "AILog",
+      "description": "AI interaction logs."
+    },
+    "/gmb_tokens/{userId}": {
+      "schema": "GMBToken",
+      "description": "Secure GMB OAuth2 tokens."
+    },
+    "/gmb_logs/{logId}": {
+      "schema": "GMBLog",
+      "description": "GMB automation logs."
+    },
+    "/gmb_settings/{userId}": {
+      "schema": "GMBSettings",
+      "description": "GMB automation settings."
+    }
+  }
+}
